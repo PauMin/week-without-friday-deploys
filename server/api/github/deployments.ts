@@ -1,10 +1,10 @@
-import { octokit } from "~/server/config";
+import { octokit, repoOwner } from "~/server/config";
 
 export default defineEventHandler(async event => {
-    const { owner, repo } = await getQuery(event);
+    const { repo } = await getQuery(event);
 
     const { data } = await octokit.request('GET /repos/{owner}/{repo}/deployments', {
-        owner: owner as string,
+        owner: repoOwner,
         repo: repo as string,
         environment: 'production',
     });

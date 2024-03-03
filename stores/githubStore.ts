@@ -12,13 +12,8 @@ interface Deployment {
 export const useGithubStore = defineStore('github', {
     state: () => ({
         deployments: [] as Deployment[],
-        owner: 'cybetic',
-        repo: 'gameplatform',
-        repos: [
-            {key: 'gameplatform', value: 'Game Platform'},
-            {key: 'backoffice', value: 'Backoffice'},
-            {key: 'sportsbook', value: 'Sportsbook'},
-        ],
+        repo: null as string | null,
+        repos: [] as { key: string, value: string }[],
         error: null as string | null,
     }),
     getters: {
@@ -26,11 +21,11 @@ export const useGithubStore = defineStore('github', {
             return this.error !== null;
         },
 
-        errorMessage(): string | null {
-            return this.error;
-        },
-
         lastFridayDeploy(): Deployment | null {
+            if (!this.deployments.length) {
+                return null;
+            }
+
             const lastFriday = this.deployments.find((deployment) => {
                 const date = new Date(deployment.created_at);
                 return date.getDay() === 5;
@@ -55,7 +50,11 @@ export const useGithubStore = defineStore('github', {
             return Math.floor(diff / (1000 * 60 * 60 * 24 * 7)).toString();
         },
 
-        weekCount(): string {
+        weekCount(): string | null {
+            if (!this.deployments.length) {
+                return null;
+            }
+
             const first = new Date(this.deployments[0].created_at);
             const last = new Date(this.deployments[this.deployments.length - 1].created_at);
             const diff = last.getTime() - first.getTime();
@@ -63,9 +62,19 @@ export const useGithubStore = defineStore('github', {
         }
     },
     actions: {
+        async fetchRepos() {
+            try {
+                const data = await $fetch('/api/github/repositories');
+
+                this.repos = data.map((repo) => ({ key: repo.name, value: repo.name }));
+                this.repo = this.repos[0].key;
+            } catch (error: any) {
+                this.error = error.message;
+            }
+        },
         async fetchDeploys() {
             try {
-                const data = await $fetch(`/api/github/deployments?owner=${this.owner}&repo=${this.repo}`);
+                const data = await $fetch(`/api/github/deployments?repo=${this.repo}`);
 
                 this.deployments = data.map((deployment) => ({
                     id: deployment.id,

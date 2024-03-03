@@ -15,7 +15,8 @@
     "octokit": "^3.1.2",
     "pinia": "^2.1.7",
     "vue": "^3.4.19",
-    "vue-router": "^4.3.0"
+    "vue-router": "^4.3.0",
+    "vue3-perfect-scrollbar": "^1.6.1"
   },
   "devDependencies": {
     "@octokit/types": "^12.6.0",
