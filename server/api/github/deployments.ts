@@ -9,5 +9,12 @@ export default defineEventHandler(async event => {
         environment: 'production',
     });
 
-    return data;
+    return data.map((deployment) => ({
+        id: deployment.id,
+        environment: deployment.environment,
+        creator: { login: deployment.creator?.login },
+        created_at: deployment.created_at,
+        updated_at: deployment.updated_at,
+        statuses_url: deployment.statuses_url,
+    }));
 });
