@@ -74,16 +74,7 @@ export const useGithubStore = defineStore('github', {
         },
         async fetchDeploys() {
             try {
-                const data = await $fetch(`/api/github/deployments?repo=${this.repo}`);
-
-                this.deployments = data.map((deployment) => ({
-                    id: deployment.id,
-                    environment: deployment.environment,
-                    creator: { login: deployment.creator?.login },
-                    created_at: deployment.created_at,
-                    updated_at: deployment.updated_at,
-                    statuses_url: deployment.statuses_url,
-                })) as Deployment[];
+                this.deployments = await $fetch(`/api/github/deployments?repo=${this.repo}`);
             } catch (error: any) {
                 this.error = error.message;
             }
