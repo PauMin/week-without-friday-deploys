@@ -9,7 +9,7 @@ watch(repo, (newRepo) => {
 });
 
 await callOnce(github.fetchRepos);
-callOnce(github.fetchDeploys);
+await callOnce(github.fetchDeploys);
 </script>
 
 <template>
